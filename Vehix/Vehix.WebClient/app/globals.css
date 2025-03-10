@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #000;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-swipe {
+  width: max-content;
+  display: flex;
+  animation: swipe 30s infinite;
+}
+
+@keyframes swipe {
+  0% {
+    transform: translateX(0%);
+  }
+
+  12.5% {
+    transform: translateX(-25%);
+  }
+
+  25% {
+    transform: translateX(-25%);
+  }
+
+  37.5% {
+    transform: translateX(-50%);
+  }
+
+  50% {
+    transform: translateX(-50%);
+  }
+
+  62.5% {
+    transform: translateX(-75%);
+  }
+
+  75% {
+    transform: translateX(-75%);
+  }
+
+  87.5% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(0%);
+  }
+
+}
+
+/*koyu renk [#050709] - açık renk [#101113] */
+.border-image-straight {
+  border-image: linear-gradient(to right, #fff6ad 0%, #fea9f8 100%) 1;
+}
+
+.border-image-straight-down {
+  border-image: linear-gradient(to bottom, #fff6ad 0%, #fea9f8 100%) 1;
+}
+
+.border-image-straight-left {
+  border-image: linear-gradient(to left, #fff6ad 0%, #fea9f8 100%) 1;
+}
+
+.border-image {
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to right, #fff6ad, #fea9f8) border-box;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  /*hover-focus*/
+}
+
+.border-image-card {
+  background: linear-gradient(#050709, #050709) padding-box,
+    linear-gradient(to right, #fff6ad, #fea9f8) border-box;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  /*hover-focus-shadow*/
+}
+
+.border-image-button {
+  appearance: none;
+  background: linear-gradient(#050709, #050709) padding-box,
+    linear-gradient(to right, #fff6ad, #fea9f8) border-box;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  /*hover-focus-shadow*/
+}
+
+.border-image-sticky {
+  appearance: none;
+  background: linear-gradient(#050709, #050709) padding-box,
+    linear-gradient(to right, #fff6ad, #fea9f8) border-box;
+  border-radius: 1rem;
+  border: 1px solid transparent;
+  /*hover-focus-shadow*/
+}

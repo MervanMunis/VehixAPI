@@ -1,0 +1,127 @@
+services:
+  frontend:
+    build:
+      context: ./Vehix.WebClient
+      dockerfile: Dockerfile
+    image: vehix-frontend
+    container_name: frontend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - BACKEND_KEY=${BACKEND_KEY}
+      - NEXT_PUBLIC_BACKEND_URL=https://api.vehixapi.com
+    depends_on:
+      - backend
+    expose:
+      - "3000"
+    networks:
+      vehix-network:
+        ipv4_address: 172.20.0.11
+
+  backend:
+    build:
+      context: ./Vehix.WebAPI/Vehix.WebAPI
+      dockerfile: Dockerfile
+    image: vehix-backend
+    container_name: backend
+    restart: unless-stopped
+    extra_hosts:
+      - "vehixapi.com:172.20.0.1"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - JWT_KEY=${JWT_KEY}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
+      - AUTH_PASSWORD=${AUTH_PASSWORD}
+      - REDIS_CONNECTION_STRING=${REDIS_CONNECTION_STRING}
+      - API_KEY_HEADER=${API_KEY_HEADER}
+      - API_KEY_ID=${API_KEY_ID}
+      - API_KEY_USERNAME=${API_KEY_USERNAME}
+      - API_KEY_EMAIL=${API_KEY_EMAIL}
+      - API_KEY_FRONTEND_KEY=${API_KEY_FRONTEND_KEY}
+      - API_KEY_HEADER_NAME=${API_KEY_HEADER_NAME}
+    volumes:
+      - ./Vehix.WebAPI/Vehix.WebAPI/wwwroot:/app/wwwroot
+    depends_on:
+      - mongodb
+      - redis
+    expose:
+      - "8080"
+    networks:
+      vehix-network:
+        ipv4_address: 172.20.0.10
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  mongodb:
+    image: mongo:7.0.14
+    container_name: mongodb
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    expose:
+    - "27017"
+    networks:
+      vehix-network:
+        ipv4_address: 172.20.0.9
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:7.4.0-bookworm
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    expose:
+    - "6379"
+    networks:
+      vehix-network:
+        ipv4_address: 172.20.0.8
+    command: redis-server --protected-mode no --bind redis --port 6379 --requirepass "${REDIS_PASSWORD}" --notify-keyspace-events Ex
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "PING"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx:stable-bookworm-perl
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+      - "8100:81"
+      - "4430:443"
+      - "4440:444"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      vehix-network:
+        ipv4_address: 172.20.0.7
+
+networks:
+  vehix-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+volumes:
+  mongo-data:
+  redis-data:
