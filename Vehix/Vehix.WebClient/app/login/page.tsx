@@ -25,12 +25,12 @@ const LoginPage = () => {
 
       if (response.status === 200) {
         console.log(response.status);
-        localStorage.setItem("MDMVSCR", "139gPAI1cvaxxOSGNj39g01dcXX1h0e8g");
+        localStorage.setItem("", "");
         login();
         router.push("/dashboard");
       }
     } catch (err) {
-      localStorage.removeItem("MDMVSCR");
+      localStorage.removeItem("");
       if (err instanceof AxiosError) {
         const statusCode = err.response?.status;
         if (statusCode === 429) {
